@@ -1,0 +1,14 @@
+{
+  "name": "gpio-buttons",
+  "version": "0.1.0",
+  "description": "GPIO button-listener plugin for Volumio2",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tomatpasser",
+  "license": "ISC",
+  "volumio_info": {
+    "plugin_type": "miscellanea"
+  }
+}

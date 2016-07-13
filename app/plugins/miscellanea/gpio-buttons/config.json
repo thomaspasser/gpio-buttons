@@ -1,0 +1,6 @@
+{
+"pin":{"value":"18","type":"number"},
+"trigger_value":{"value":true,"type":"boolean"},
+"action":{"value":"volup","type":"string"}
+}
+
