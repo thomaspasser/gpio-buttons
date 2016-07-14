@@ -27,12 +27,6 @@ GPIOButtons.prototype.onVolumioStart = function () {
 	self.applyConf(self.getConf());
 	self.logger.info("GPIO-Buttons initialized");
 
-	button = new Gpio(18, 'in', 'both');
-
-	button.watch(function(err, value) {
-		led.writeSync(value);
-});
-
 };
 
 GPIOButtons.prototype.onStop = function () {
@@ -90,8 +84,8 @@ GPIOButtons.prototype.clearTriggers = function () {
 	for (var i in self.triggers) {
 		var trigger = self.triggers[i];
 		self.logger.info("GPIO-Button: Destroying trigger + i");
+		trigger.unwatchAll();
 	}
-	gpio.destroy();
 };
 
 GPIOButtons.prototype.setConf = function (conf) {
@@ -130,15 +124,75 @@ GPIOButtons.prototype.setAdditionalConf = function () {
 GPIOButtons.prototype.applyConf = function(conf) {
 	var self = this;
 	self.logger.info('GPIO-Buttons: Applying config file...');
-	/*
+
 	for (var i in conf){
 		item = conf[i];
-		gpio.setup(item.pin, gpio.DIR_IN, gpio.EDGE_BOTH);
+
 		self.logger.info('GPIO-Buttons: Set up GPIO listener on pin ' + item.pin);
+		j = new Gpio(item.pin,'in','falling');
+
+		switch(item.action){
+			case "playpause":
+				j.watch(self.playpause);
+				break;
+			case "next":
+				j.watch(self.next);
+				break;
+			case "previous":
+				j.watch(self.previous);
+				break;
+			case "volup":
+				j.watch(self.volup);
+				break;
+			case "voldown":
+				j.watch(self.voldown);
+				break;
+		}
+
+		self.triggers.push(j)
 	}
 
-	gpio.on('change', function(channel,value){
-		self.logger.info('Channel ' + channel + ' value is now ' + value);
-	});
-	*/
+
 }
+
+	GPIOButtons.prototype.playpause = function(){
+		var self = this;
+		console.log('Play/pause button pressed');
+	  socket.emit('getState','');
+
+	  socket.once('pushState', function (state) {
+	    console.log('State is:' + state.status);
+
+	    if(state.status=='play'){
+	      console.log('Stopping..\n');
+	      socket.emit('stop');
+	    } else {
+	      console.log('Starting..\n');
+	      socket.emit('play');
+	    }
+	  });
+	}
+
+	//Next on playlist
+	GPIOButtons.prototype.next = function(){
+	  console.log('Next-button pressed\n');
+	  socket.emit('next')
+	}
+
+	//Previous on playlist
+	GPIOButtons.prototype.previous = function(){
+	  console.log('Previous-button pressed\n');
+	  socket.emit('prev')
+	}
+
+	//Volume up
+	GPIOButtons.prototype.volup = function(){
+	  console.log('Vol+ button pressed\n');
+	  socket.emit('volume','+');
+	}
+
+	//Volume down
+	GPIOButtons.prototype.voldown = function(){
+	  console.log('Vol- button pressed\n');
+	  socket.emit('volume','-');
+	}
