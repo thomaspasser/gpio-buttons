@@ -1,8 +1,12 @@
 'use strict';
 
+var libQ = require('kew');
 var fs = require('fs-extra');
 var config = new (require('v-conf'))();
 var Gpio = require('onoff').Gpio;
+var io = require('socket.io-client');
+var socket = io.connect('http://localhost:3000');
+
 
 module.exports = GPIOButtons;
 
@@ -27,6 +31,8 @@ GPIOButtons.prototype.onVolumioStart = function () {
 	self.applyConf(self.getConf());
 	self.logger.info("GPIO-Buttons initialized");
 
+	return libQ.resolve();
+
 };
 
 GPIOButtons.prototype.onStop = function () {
@@ -50,15 +56,29 @@ GPIOButtons.prototype.onUninstall = function () {
 };
 
 GPIOButtons.prototype.getUIConfig = function () {
+	var defer = libQ.defer();
 	var self = this;
 
-	var uiconf=fs.readJsonSync(__dirname+'/UIConfig.json');
+	var lang_code = this.commandRouter.sharedVars.get('language_code');
+
+        self.commandRouter.i18nJson(__dirname+'/i18n/strings_'+lang_code+'.json',
+                __dirname+'/i18n/strings_en.json',
+                __dirname + '/UIConfig.json')
+        .then(function(uiconf)
+        {
+
 	uiconf.sections[0].content[0].value=config.get('enabled');
 	uiconf.sections[0].content[1].value=config.get('pin');
-	uiconf.sections[0].content[2].value=config.get('trigger_value');
-	uiconf.sections[0].content[3].value=config.get('action');
+	uiconf.sections[0].content[2].value=config.get('action');
 
-	return uiconf;
+            defer.resolve(uiconf);
+            })
+                .fail(function()
+            {
+                defer.reject(new Error());
+        });
+
+        return defer.promise;
 };
 
 GPIOButtons.prototype.setUIConfig = function (data) {
@@ -83,9 +103,10 @@ GPIOButtons.prototype.clearTriggers = function () {
 	var self = this;
 	for (var i in self.triggers) {
 		var trigger = self.triggers[i];
-		self.logger.info("GPIO-Button: Destroying trigger + i");
+		self.logger.info("GPIO-Button: Destroying trigger " + i);
 		trigger.unwatchAll();
 	}
+	self.triggers = [];
 };
 
 GPIOButtons.prototype.setConf = function (conf) {
@@ -128,8 +149,8 @@ GPIOButtons.prototype.applyConf = function(conf) {
 	for (var i in conf){
 		var item = conf[i];
 
-		self.logger.info('GPIO-Buttons: Set up GPIO listener on pin ' + item.pin);
-		j = new Gpio(item.pin,'in','falling');
+		self.logger.info('GPIO-Buttons: Setting up GPIO listener on pin ' + item.pin);
+		var j = new Gpio(item.pin,'in','falling');
 
 		switch(item.action){
 			case "playpause":
@@ -147,52 +168,69 @@ GPIOButtons.prototype.applyConf = function(conf) {
 			case "voldown":
 				j.watch(self.voldown);
 				break;
+			default:
+				self.logger.info('GPIO-Buttons: Action does not exist: ' + item.action)
+				break;
 		}
 
-		self.triggers.push(j)
-	}
+		self.triggers.push(j);
 
+	}
 
 }
 
-	GPIOButtons.prototype.playpause = function(){
-		var self = this;
-		console.log('Play/pause button pressed');
-	  socket.emit('getState','');
+GPIOButtons.prototype.saveTriggers=function(data)
+{
+	var self = this;
 
-	  socket.once('pushState', function (state) {
-	    console.log('State is:' + state.status);
+	var defer = libQ.defer();
+  console.log(data);
+	console.log(data['pin']['value']);
 
-	    if(state.status=='play'){
-	      console.log('Stopping..\n');
-	      socket.emit('stop');
-	    } else {
-	      console.log('Starting..\n');
-	      socket.emit('play');
-	    }
-	  });
-	}
 
-	//Next on playlist
-	GPIOButtons.prototype.next = function(){
-	  console.log('Next-button pressed\n');
-	  socket.emit('next')
-	}
+	self.setConf(data);
 
-	//Previous on playlist
-	GPIOButtons.prototype.previous = function(){
-	  console.log('Previous-button pressed\n');
-	  socket.emit('prev')
-	}
+	// TODO toast
+	//self.commandRouter.pushToastMessage('success',self.commandRouter.getI18nString('ALARM.ALARM_CLOCK_TITLE'), self.commandRouter.getI18nString('ALARM.ALARM_CLOCK_SAVE'));
 
-	//Volume up
-	GPIOButtons.prototype.volup = function(){
-	  console.log('Vol+ button pressed\n');
-	  socket.emit('volume','+');
-	}
+	defer.resolve({});
+	return defer.promise;
+};
 
-	//Volume down
-	GPIOButtons.prototype.voldown = function(){
-	  console.log('Vol- button pressed\n');
-	  socket.emit('volume','-');
-	}
+
+GPIOButtons.prototype.playpause = function() {
+	//self.logger.info('GPIO-Buttons: Play/pause button pressed');
+  socket.emit('getState','');
+
+  socket.once('pushState', function (state) {
+    if(state.status=='play'){
+      socket.emit('stop');
+    } else {
+			socket.emit('play');
+    }
+  });
+}
+
+//Next on playlist
+GPIOButtons.prototype.next = function() {
+  //self.logger.info('GPIO-Buttons: Next-button pressed');
+  socket.emit('next')
+}
+
+//Previous on playlist
+GPIOButtons.prototype.previous = function() {
+  //self.logger.info('GPIO-Buttons: Previous-button pressed');
+  socket.emit('prev')
+}
+
+//Volume up
+GPIOButtons.prototype.volup = function() {
+  //self.logger.info('GPIO-Buttons: Vol+ button pressed');
+  socket.emit('volume','+');
+}
+
+//Volume down
+GPIOButtons.prototype.voldown = function() {
+  //self.logger.info('GPIO-Buttons: Vol- button pressed\n');
+  socket.emit('volume','-');
+}

@@ -7,8 +7,8 @@
       "id": "gpio_setup",
       "element": "section",
       "label": "Setup your GPIO button actions",
-      "icon": "fa-clock-o",
-      "onSave": {"type":"controller", "endpoint":"miscellanea/gpio-buttons", "method":"saveButton"},
+      "icon": "fa-plug",
+      "onSave": {"type":"controller", "endpoint":"miscellanea/gpio-buttons", "method":"saveTriggers"},
       "saveButton": {
         "label": "Save",
         "data": [
@@ -22,20 +22,18 @@
           "id": "enabled",
           "element": "switch",
           "label": "Enable",
-          "value": true
+          "value": ""
         },
         {
           "id": "pin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {
-            "value": 12,
-            "label": "12"
-          },
+          "value": "",
+
           "options": [
             {
               "value": 0,
-              "label": "00"
+              "label": "0"
             },
             {
               "value": 1,
@@ -137,27 +135,35 @@
         },
         {
           "id": "action",
-          "element": "string",
-          "label": "Trigger Value",
-          "value":  {
-            "value":0,
-            "label": "00"
-          },
+          "element": "select",
+          "label": "Action",
+          "value": "",
           "options": [
             {
-              "value":false,
-              "label": "False"
+              "value": "playpause",
+              "label": "Play/pause"
             },
             {
-              "value":true,
-              "label": "True"
+              "value": "volup",
+              "label": "Vol+"
+            },
+            {
+              "value": "voldown",
+              "label": "Vol-"
+            },
+            {
+              "value": "next",
+              "label": "Next"
+            },
+            {
+              "value": "previous",
+              "label": "Previous"
             }
           ],
           "visibleIf": {
             "field": "enabled",
             "value": true
           }
-
         }
       ]
     }
