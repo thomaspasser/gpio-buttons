@@ -2,7 +2,7 @@
 
 var fs = require('fs-extra');
 var config = new (require('v-conf'))();
-var gpio = require('onoff').Gpio;
+var Gpio = require('onoff').Gpio;
 
 module.exports = GPIOButtons;
 
@@ -124,9 +124,9 @@ GPIOButtons.prototype.setAdditionalConf = function () {
 GPIOButtons.prototype.applyConf = function(conf) {
 	var self = this;
 	self.logger.info('GPIO-Buttons: Applying config file...');
-
+	self.logger.info('GPIO-Buttons: Found ' + conf.length + ' items');
 	for (var i in conf){
-		item = conf[i];
+		var item = conf[i];
 
 		self.logger.info('GPIO-Buttons: Set up GPIO listener on pin ' + item.pin);
 		j = new Gpio(item.pin,'in','falling');

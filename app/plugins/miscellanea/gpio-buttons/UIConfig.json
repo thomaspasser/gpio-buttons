@@ -14,7 +14,6 @@
         "data": [
           "enabled",
           "pin",
-          "trigger_value",
           "action"
         ]
       },
@@ -129,29 +128,6 @@
             {
               "value": 23,
               "label": "23"
-            }
-          ],
-          "visibleIf": {
-            "field": "enabled",
-            "value": true
-          }
-        },
-        {
-          "id": "trigger_value",
-          "element": "boolean",
-          "label": "Trigger Value",
-          "value":  {
-            "value":0,
-            "label": "00"
-          },
-          "options": [
-            {
-              "value":false,
-              "label": "False"
-            },
-            {
-              "value":true,
-              "label": "True"
             }
           ],
           "visibleIf": {
