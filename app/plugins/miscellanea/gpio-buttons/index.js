@@ -184,11 +184,14 @@ GPIOButtons.prototype.saveTriggers=function(data)
 	var self = this;
 
 	var defer = libQ.defer();
-  console.log(data);
-	console.log(data['pin']['value']);
+	//console.log(data);
+	//console.log(data['pin']['value']);
 
+	var conf = [];
+	conf[0] = {'pin': data['pin']['value'],
+						 'action': data['action']['value']}
 
-	self.setConf(data);
+	self.setConf(conf);
 
 	// TODO toast
 	//self.commandRouter.pushToastMessage('success',self.commandRouter.getI18nString('ALARM.ALARM_CLOCK_TITLE'), self.commandRouter.getI18nString('ALARM.ALARM_CLOCK_SAVE'));
