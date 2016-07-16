@@ -193,8 +193,7 @@ GPIOButtons.prototype.saveTriggers=function(data)
 
 	self.setConf(conf);
 
-	// TODO toast
-	//self.commandRouter.pushToastMessage('success',self.commandRouter.getI18nString('ALARM.ALARM_CLOCK_TITLE'), self.commandRouter.getI18nString('ALARM.ALARM_CLOCK_SAVE'));
+	self.commandRouter.pushToastMessage('success',"GPIO-Buttons", "Configuration saved");
 
 	defer.resolve({});
 	return defer.promise;
