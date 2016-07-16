@@ -18,7 +18,6 @@ function GPIOButtons(context) {
 	self.triggers = [];
 }
 
-
 /*
  * This method can be defined by every plugin which needs to be informed of the startup of Volumio.
  * The Core controller checks if the method is defined and executes it on startup if it exists.
@@ -27,7 +26,9 @@ GPIOButtons.prototype.onVolumioStart = function () {
 	var self = this;
 	//Perform startup tasks here
 	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
-	config.loadFile(self.configFile);
+	this.config = new(require('v-conf'))();
+	this.config.loadFile(self.configFile);
+
 	self.applyConf(self.getConf());
 	self.logger.info("GPIO-Buttons initialized");
 
@@ -38,6 +39,9 @@ GPIOButtons.prototype.onVolumioStart = function () {
 GPIOButtons.prototype.onStop = function () {
 	var self = this;
 	//Perform startup tasks here
+	self.clearTriggers();
+	self.logger.info("GPIO-Buttons stopped")
+	return libQ.resolve();
 };
 
 GPIOButtons.prototype.onRestart = function () {
@@ -59,6 +63,8 @@ GPIOButtons.prototype.getUIConfig = function () {
 	var defer = libQ.defer();
 	var self = this;
 
+	self.logger.info('GPIO-Buttons: Getting UI config');
+
 	var lang_code = this.commandRouter.sharedVars.get('language_code');
 
         self.commandRouter.i18nJson(__dirname+'/i18n/strings_'+lang_code+'.json',
@@ -67,12 +73,22 @@ GPIOButtons.prototype.getUIConfig = function () {
         .then(function(uiconf)
         {
 
-	uiconf.sections[0].content[0].value=config.get('enabled');
-	uiconf.sections[0].content[1].value=config.get('pin');
-	uiconf.sections[0].content[2].value=config.get('action');
+  var conf = self.getConf();
+
+	if(conf.length > 0){
+		uiconf.sections[0].content[0].value= conf[0]['enabled'];
+
+		uiconf.sections[0].content[1].value.value= conf[0]['pin'];
+		uiconf.sections[0].content[1].value.label= conf[0]['pin'].toString();
+
+		uiconf.sections[0].content[2].value.value= conf[0]['action'];
+		uiconf.sections[0].content[2].value.label= self.getActionName(conf[0]['action']);
+
+	}
+	// else keep defaults from UIConfig.json
 
             defer.resolve(uiconf);
-            })
+					})
                 .fail(function()
             {
                 defer.reject(new Error());
@@ -149,32 +165,33 @@ GPIOButtons.prototype.applyConf = function(conf) {
 	for (var i in conf){
 		var item = conf[i];
 
-		self.logger.info('GPIO-Buttons: Setting up GPIO listener on pin ' + item.pin);
-		var j = new Gpio(item.pin,'in','falling');
+		if(item.enabled == true){
+			self.logger.info('GPIO-Buttons: Setting up GPIO listener on pin ' + item.pin);
+			var j = new Gpio(item.pin,'in','falling');
 
-		switch(item.action){
-			case "playpause":
-				j.watch(self.playpause);
-				break;
-			case "next":
-				j.watch(self.next);
-				break;
-			case "previous":
-				j.watch(self.previous);
-				break;
-			case "volup":
-				j.watch(self.volup);
-				break;
-			case "voldown":
-				j.watch(self.voldown);
-				break;
-			default:
-				self.logger.info('GPIO-Buttons: Action does not exist: ' + item.action)
-				break;
+			switch(item.action){
+				case "playpause":
+					j.watch(self.playpause);
+					break;
+				case "next":
+					j.watch(self.next);
+					break;
+				case "previous":
+					j.watch(self.previous);
+					break;
+				case "volup":
+					j.watch(self.volup);
+					break;
+				case "voldown":
+					j.watch(self.voldown);
+					break;
+				default:
+					self.logger.info('GPIO-Buttons: Action does not exist: ' + item.action)
+					break;
+			}
+
+			self.triggers.push(j);
 		}
-
-		self.triggers.push(j);
-
 	}
 
 }
@@ -188,8 +205,9 @@ GPIOButtons.prototype.saveTriggers=function(data)
 	//console.log(data['pin']['value']);
 
 	var conf = [];
-	conf[0] = {'pin': data['pin']['value'],
-						 'action': data['action']['value']}
+	conf[0] = {'enabled': data['enabled'],
+						'pin': data['pin']['value'],
+						'action': data['action']['value']}
 
 	self.setConf(conf);
 
@@ -199,6 +217,29 @@ GPIOButtons.prototype.saveTriggers=function(data)
 	return defer.promise;
 };
 
+
+GPIOButtons.prototype.getActionName = function(action) {
+	var actionName;
+
+	switch(action){
+		case 'playpause':
+			actionName = "Play/pause";
+			break;
+		case 'next':
+			actionName = "Next";
+			break;
+		case 'previous':
+			actionName = "Previous";
+			break;
+		case 'volup':
+			actionName = "Vol+";
+			break;
+		case 'voldown':
+			actionName = "Vol-";
+			break;
+	}
+	return actionName;
+}
 
 GPIOButtons.prototype.playpause = function() {
 	//self.logger.info('GPIO-Buttons: Play/pause button pressed');

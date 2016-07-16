@@ -22,13 +22,15 @@
           "id": "enabled",
           "element": "switch",
           "label": "Enable",
-          "value": ""
+          "value": false
         },
         {
           "id": "pin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": "",
+          "value": {"value": 2,
+                    "label": "2"
+          },
 
           "options": [
             {
@@ -145,7 +147,9 @@
           "id": "action",
           "element": "select",
           "label": "Action",
-          "value": "",
+          "value": {"value": "playpause",
+                    "label": "Play/pause"
+          },
           "options": [
             {
               "value": "playpause",

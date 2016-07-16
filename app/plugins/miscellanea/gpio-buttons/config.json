@@ -1,4 +1,5 @@
 {
+  "enabled":{"value":true, "type":"boolean"},
   "pin":{"value":"18","type":"number"},
   "action":{"value":"volup","type":"string"}
 }
