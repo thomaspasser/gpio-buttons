@@ -16,36 +16,21 @@ The button should be wired between the GPIO pin and opposite voltage as the defa
 
 Example: If using GPIO pin 17, the button should be wired between the pin and 5V (high) because the default pull is low for GPIO pin 17.
 
-| GPIO Pin      | Default pull  |
-| :-----------: |:-------------:|
-| 2             | high          |
-| 3             | high          |
-| 4             | high          |
-| 5             | high          |
-| 6             | high          |
-| 7             | high          |
-| 8             | high          |
-| 9             | low           |
-| 10            | low           |
-| 11            | low           |
-| 12            | low           |
-| 13            | low           |
-| 14            | low           |
-| 15            | low           |
-| 16            | low           |
-| 17            | low           |
-| 18            | low           |
-| 18            | low           |
-| 19            | low           |
-| 20            | low           |
-| 21            | low           |
-| 22            | low           |
-| 23            | low           |
-| 24            | low           |
-| 25            | low           |
-| 26            | low           |
-| 27            | low           |
-
+| GPIO Pin      | Default pull  | GPIO Pin      | Default pull  |
+| :-----------: |:-------------:| :-----------: |:-------------:|
+| 2             | high          | 15            | low           |
+| 3             | high          | 16            | low           |
+| 4             | high          | 17            | low           |
+| 5             | high          | 18            | low           |
+| 6             | high          | 19            | low           |
+| 7             | high          | 20            | low           |
+| 8             | high          | 21            | low           |
+| 9             | low           | 22            | low           |
+| 10            | low           | 23            | low           |
+| 11            | low           | 24            | low           |
+| 12            | low           | 25            | low           |
+| 13            | low           | 26            | low           |
+| 14            | low           | 27            | low           |
 
 #TODO
 - Control of internal pull resistor
