@@ -18,13 +18,9 @@ function GPIOButtons(context) {
 	self.triggers = [];
 }
 
-/*
- * This method can be defined by every plugin which needs to be informed of the startup of Volumio.
- * The Core controller checks if the method is defined and executes it on startup if it exists.
- */
 GPIOButtons.prototype.onVolumioStart = function () {
 	var self = this;
-	//Perform startup tasks here
+
 	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
 	this.config = new(require('v-conf'))();
 	this.config.loadFile(self.configFile);
@@ -38,7 +34,7 @@ GPIOButtons.prototype.onVolumioStart = function () {
 
 GPIOButtons.prototype.onStop = function () {
 	var self = this;
-	//Perform startup tasks here
+
 	self.clearTriggers();
 	self.logger.info("GPIO-Buttons stopped")
 	return libQ.resolve();
@@ -46,18 +42,17 @@ GPIOButtons.prototype.onStop = function () {
 
 GPIOButtons.prototype.onRestart = function () {
 	var self = this;
-	//Perform startup tasks here
+
 };
 
 GPIOButtons.prototype.onInstall = function () {
 	var self = this;
-	//Perform your installation tasks here
-	self.commandRouter.pushToastMessage('success',"GPIO-Buttons", "Install finished, reboot required!");
+
 };
 
 GPIOButtons.prototype.onUninstall = function () {
 	var self = this;
-	//Perform your installation tasks here
+
 };
 
 GPIOButtons.prototype.getUIConfig = function () {
@@ -100,7 +95,7 @@ GPIOButtons.prototype.getUIConfig = function () {
 
 GPIOButtons.prototype.setUIConfig = function (data) {
 	var self = this;
-	//Perform your installation tasks here
+
 	var uiconf=fs.readJsonSync(__dirname+'/UIConfig.json');
 };
 
@@ -140,25 +135,24 @@ GPIOButtons.prototype.setConf = function (conf) {
 	fs.writeJsonSync(self.configFile,JSON.stringify(conf));
 };
 
-//Optional functions exposed for making development easier and more clear
 GPIOButtons.prototype.getSystemConf = function (pluginName, varName) {
 	var self = this;
-	//Perform your installation tasks here
+
 };
 
 GPIOButtons.prototype.setSystemConf = function (pluginName, varName) {
 	var self = this;
-	//Perform your installation tasks here
+
 };
 
 GPIOButtons.prototype.getAdditionalConf = function () {
 	var self = this;
-	//Perform your installation tasks here
+
 };
 
 GPIOButtons.prototype.setAdditionalConf = function () {
 	var self = this;
-	//Perform your installation tasks here
+
 };
 
 GPIOButtons.prototype.applyConf = function(conf) {
@@ -212,8 +206,6 @@ GPIOButtons.prototype.saveTriggers=function(data)
 	var self = this;
 
 	var defer = libQ.defer();
-	//console.log(data);
-	//console.log(data['pin']['value']);
 
 	var conf = [];
 	conf[0] = {'enabled': data['enabled'],
