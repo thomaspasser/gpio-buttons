@@ -16,6 +16,13 @@ function GPIOButtons(context) {
 	self.commandRouter = self.context.coreCommand;
 	self.logger = self.context.logger;
 	self.triggers = [];
+	self.values = {
+		playpauseval: 0,
+		volupval: 0,
+		voldownval: 0,
+		previousval: 0,
+		nextval: 0
+	};
 }
 
 GPIOButtons.prototype.onVolumioStart = function () {
@@ -185,38 +192,41 @@ GPIOButtons.prototype.applyConf = function(conf) {
 	if(conf.length > 0){
 
 		var item = conf[0];
+
+
+
 		if(item.playpauseenabled === true){
 			self.logger.info('GPIO-Buttons: Play/pause on pin ' + item.playpausepin);
-			var j = new Gpio(item.playpausepin,'in','falling');
-			j.watch(self.playpause);
+			var j = new Gpio(item.playpausepin,'in','both');
+			j.watch(self.listener.bind(self,'playpause'));
 			self.triggers.push(j);
 		}
 
 		if(item.volupenabled === true){
 			self.logger.info('GPIO-Buttons: Vol+ on pin ' + item.voluppin);
-			var j = new Gpio(item.voluppin,'in','falling');
-			j.watch(self.volup);
+			var j = new Gpio(item.voluppin,'in','both');
+			j.watch(self.listener.bind(self,'volup'));
 			self.triggers.push(j);
 		}
 
 		if(item.voldownenabled === true){
 			self.logger.info('GPIO-Buttons: Vol- on pin ' + item.voldownpin);
-			var j = new Gpio(item.voldownpin,'in','falling');
-			j.watch(self.voldown);
+			var j = new Gpio(item.voldownpin,'in','both');
+			j.watch(self.listener.bind(self,'voldown'));
 			self.triggers.push(j);
 		}
 
 		if(item.previousenabled === true){
 			self.logger.info('GPIO-Buttons: Previous on pin ' + item.previouspin);
-			var j = new Gpio(item.previouspin,'in','falling');
-			j.watch(self.previous);
+			var j = new Gpio(item.previouspin,'in','both');
+			j.watch(self.listener.bind(self,'previous'));
 			self.triggers.push(j);
 		}
 
 		if(item.nextenabled === true){
 			self.logger.info('GPIO-Buttons: Next on pin ' + item.nextpin);
-			var j = new Gpio(item.nextpin,'in','falling');
-			j.watch(self.next);
+			var j = new Gpio(item.nextpin,'in','both');
+			j.watch(self.listener.bind(self,'next'));
 			self.triggers.push(j);
 		}
 	} else {
@@ -283,13 +293,50 @@ GPIOButtons.prototype.getActionName = function(action) {
 }
 */
 
+GPIOButtons.prototype.listener = function(action,err,value){
+	var self = this;
+
+	switch(action){
+		case 'playpause':
+			if(value !== self.values.playpauseval && value === 1){
+				self.playpause();
+			}
+			self.values.playpauseval = value;
+			break;
+		case 'next':
+			if(value !== self.values.nextval && value === 1){
+				self.next();
+			}
+			self.values.nextval = value;
+			break;
+		case 'previous':
+			if(value !== self.values.previousval && value === 1){
+				self.previous();
+			}
+			self.values.previousval = value;
+			break;
+		case 'volup':
+			if(value !== self.values.volupval && value === 1){
+				self.volup();
+			}
+			self.values.volupval = value;
+			break;
+		case 'voldown':
+			if(value !== self.values.voldownval && value === 1){
+				self.voldown();
+			}
+			self.values.voldownval = value;
+			break;
+	}
+}
+
 GPIOButtons.prototype.playpause = function() {
 	//self.logger.info('GPIO-Buttons: Play/pause button pressed');
   socket.emit('getState','');
 
   socket.once('pushState', function (state) {
     if(state.status=='play'){
-      socket.emit('stop');
+      socket.emit('pause');
     } else {
 			socket.emit('play');
     }
