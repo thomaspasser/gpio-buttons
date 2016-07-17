@@ -4,6 +4,8 @@ Work in progress for a GPIO button plugin for volumio2 on the raspberry pi. Uses
 
 Currently 5 actions can be attached to gpio pins: Play/pause, Vol+, Vol-, Next track and Previous track.
 
+![alt tag](http://tomatpasser.dk/gpio-buttons2.png)
+
 #Installation
 
 - Download zip for install in volumio2 here: http://tomatpasser.dk/gpio-buttons.zip
