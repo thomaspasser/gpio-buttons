@@ -14,7 +14,7 @@
         "data": [
           "playpauseenabled",
           "playpausepin",
-          "volupenabled"
+          "volupenabled",
           "voluppin",
           "voldownenabled",
           "voldownpin",
@@ -649,7 +649,7 @@
             "field": "nextenabled",
             "value": true
           }
-        },
+        }
       ]
     }
   ]

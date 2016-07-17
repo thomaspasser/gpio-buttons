@@ -179,38 +179,46 @@ GPIOButtons.prototype.applyConf = function(conf) {
 
 	//self.logger.info('GPIO-Buttons: Found ' + count + ' items');
 
-	var item = conf[0];
+	if(conf.length > 0){
 
-	if(item.playpauseenabled === true){
-		var j = new Gpio(item.playpausepin,'in','falling');
-		j.watch(self.playpause);
-		self.triggers.push(j);
-	}
+		var item = conf[0];
+		if(item.playpauseenabled === true){
+			self.logger.info('GPIO-Buttons: Play/pause on pin ' + item.playpausepin);
+			var j = new Gpio(item.playpausepin,'in','falling');
+			j.watch(self.playpause);
+			self.triggers.push(j);
+		}
 
-	if(item.volupenabled === true){
-		var j = new Gpio(item.voluppin,'in','falling');
-		j.watch(self.volup);
-		self.triggers.push(j);
-	}
+		if(item.volupenabled === true){
+			self.logger.info('GPIO-Buttons: Vol+ on pin ' + item.voluppin);
+			var j = new Gpio(item.voluppin,'in','falling');
+			j.watch(self.volup);
+			self.triggers.push(j);
+		}
 
-	if(item.voldownenabled === true){
-		var j = new Gpio(item.voldownpin,'in','falling');
-		j.watch(self.voldown);
-		self.triggers.push(j);
-	}
+		if(item.voldownenabled === true){
+			self.logger.info('GPIO-Buttons: Vol- on pin ' + item.voldownpin);
+			var j = new Gpio(item.voldownpin,'in','falling');
+			j.watch(self.voldown);
+			self.triggers.push(j);
+		}
 
-	if(item.previousenabled === true){
-		var j = new Gpio(item.previouspin,'in','falling');
-		j.watch(self.previous);
-		self.triggers.push(j);
-	}
+		if(item.previousenabled === true){
+			self.logger.info('GPIO-Buttons: Previous on pin ' + item.previouspin);
+			var j = new Gpio(item.previouspin,'in','falling');
+			j.watch(self.previous);
+			self.triggers.push(j);
+		}
 
-	if(item.nextenabled === true){
-		var j = new Gpio(item.nextpin,'in','falling');
-		j.watch(self.next);
-		self.triggers.push(j);
-	}
-
+		if(item.nextenabled === true){
+			self.logger.info('GPIO-Buttons: Next on pin ' + item.nextpin);
+			var j = new Gpio(item.nextpin,'in','falling');
+			j.watch(self.next);
+			self.triggers.push(j);
+		}
+	} else {
+		self.logger.info('GPIO-Buttons: Empty configuration');
+		}
 }
 
 GPIOButtons.prototype.saveTriggers=function(data)
@@ -222,15 +230,15 @@ GPIOButtons.prototype.saveTriggers=function(data)
 	var conf = [];
 
 	conf[0] = {
-	  "playpauseenabled": data['playpauseenabled']['value'],
+	  "playpauseenabled": data['playpauseenabled'],
 	  "playpausepin": data['playpausepin']['value'],
-	  "volupenabled": data['volupenabled']['value'],
+	  "volupenabled": data['volupenabled'],
 	  "voluppin": data['voluppin']['value'],
-	  "voldownenabled": data['voldownenabled']['value'],
+	  "voldownenabled": data['voldownenabled'],
 	  "voldownpin": data['voldownpin']['value'],
-	  "previousenabled": data['previousenabled']['value'],
+	  "previousenabled": data['previousenabled'],
 	  "previouspin": data['previouspin']['value'],
-	  "nextenabled": data['nextenabled']['value'],
+	  "nextenabled": data['nextenabled'],
 	  "nextpin": data['nextpin']['value']
 	}
 
