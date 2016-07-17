@@ -160,8 +160,8 @@
           "id": "voluppin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 2,
-                    "label": "2"
+          "value": {"value": 3,
+                    "label": "3"
           },
 
           "options": [
@@ -285,8 +285,8 @@
           "id": "voldownpin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 2,
-                    "label": "2"
+          "value": {"value": 4,
+                    "label": "4"
           },
 
           "options": [
@@ -410,8 +410,8 @@
           "id": "previouspin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 2,
-                    "label": "2"
+          "value": {"value": 5,
+                    "label": "5"
           },
 
           "options": [
@@ -535,8 +535,8 @@
           "id": "nextpin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 2,
-                    "label": "2"
+          "value": {"value": 6,
+                    "label": "6"
           },
 
           "options": [
