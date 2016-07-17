@@ -9,6 +9,7 @@
   "author": "tomatpasser",
   "license": "ISC",
   "volumio_info": {
+    "prettyName": "GPIO Buttons",
     "plugin_type": "miscellanea"
   },
   "dependencies": {

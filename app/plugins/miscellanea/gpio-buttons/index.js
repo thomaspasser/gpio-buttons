@@ -52,6 +52,7 @@ GPIOButtons.prototype.onRestart = function () {
 GPIOButtons.prototype.onInstall = function () {
 	var self = this;
 	//Perform your installation tasks here
+	self.commandRouter.pushToastMessage('success',"GPIO-Buttons", "Install finished, reboot required!");
 };
 
 GPIOButtons.prototype.onUninstall = function () {
@@ -105,7 +106,6 @@ GPIOButtons.prototype.setUIConfig = function (data) {
 
 GPIOButtons.prototype.getConf = function () {
 	var self = this;
-	//Perform your installation tasks here
 
 	var conf = [];
 	try {
@@ -119,17 +119,20 @@ GPIOButtons.prototype.clearTriggers = function () {
 	var self = this;
 	for (var i in self.triggers) {
 		var trigger = self.triggers[i];
-		self.logger.info("GPIO-Button: Destroying trigger " + i);
+		self.logger.info("GPIO-Buttons: Destroying trigger " + i);
+
 		trigger.unwatchAll();
+		trigger.unexport();
 	}
 	self.triggers = [];
 };
 
 GPIOButtons.prototype.setConf = function (conf) {
 	var self = this;
-	//Perform your installation tasks here
+
 	self.clearTriggers();
 	self.applyConf(conf);
+
 	for (var i in conf){
 		var item = conf[i];
 		item.id = i;
@@ -160,37 +163,45 @@ GPIOButtons.prototype.setAdditionalConf = function () {
 
 GPIOButtons.prototype.applyConf = function(conf) {
 	var self = this;
+
 	self.logger.info('GPIO-Buttons: Applying config file...');
 	self.logger.info('GPIO-Buttons: Found ' + conf.length + ' items');
+
 	for (var i in conf){
 		var item = conf[i];
 
-		if(item.enabled == true){
+		if(item.enabled === true){
 			self.logger.info('GPIO-Buttons: Setting up GPIO listener on pin ' + item.pin);
-			var j = new Gpio(item.pin,'in','falling');
 
-			switch(item.action){
-				case "playpause":
-					j.watch(self.playpause);
-					break;
-				case "next":
-					j.watch(self.next);
-					break;
-				case "previous":
-					j.watch(self.previous);
-					break;
-				case "volup":
-					j.watch(self.volup);
-					break;
-				case "voldown":
-					j.watch(self.voldown);
-					break;
-				default:
-					self.logger.info('GPIO-Buttons: Action does not exist: ' + item.action)
-					break;
+			try{
+				var j = new Gpio(item.pin,'in','falling');
+
+				switch(item.action){
+					case "playpause":
+						j.watch(self.playpause);
+						break;
+					case "next":
+						j.watch(self.next);
+						break;
+					case "previous":
+						j.watch(self.previous);
+						break;
+					case "volup":
+						j.watch(self.volup);
+						break;
+					case "voldown":
+						j.watch(self.voldown);
+						break;
+					default:
+						self.logger.info('GPIO-Buttons: Action does not exist: ' + item.action)
+						break;
+				}
+
+				self.triggers.push(j);
+			} catch(err) {
+				self.logger.info('GPIO-Buttons: An error occured: ' + err);
 			}
 
-			self.triggers.push(j);
 		}
 	}
 

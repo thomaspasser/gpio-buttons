@@ -1,5 +1,5 @@
 {
-  "enabled":{"value":true, "type":"boolean"},
-  "pin":{"value":"18","type":"number"},
-  "action":{"value":"volup","type":"string"}
+  "enabled":{"value":false, "type":"boolean"},
+  "pin":{"value":"2","type":"number"},
+  "action":{"value":"playpause","type":"string"}
 }
