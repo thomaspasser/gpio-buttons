@@ -61,7 +61,10 @@ GPIOButtons.prototype.getUIConfig = function () {
 
 	self.logger.info('GPIO-Buttons: Getting UI config');
 
-	var lang_code = this.commandRouter.sharedVars.get('language_code');
+	//Just for now..
+	var lang_code = 'en';
+
+	//var lang_code = this.commandRouter.sharedVars.get('language_code');
 
         self.commandRouter.i18nJson(__dirname+'/i18n/strings_'+lang_code+'.json',
                 __dirname+'/i18n/strings_en.json',
