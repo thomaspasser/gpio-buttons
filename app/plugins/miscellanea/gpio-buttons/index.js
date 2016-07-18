@@ -5,7 +5,7 @@ var fs = require('fs-extra');
 var Gpio = require('onoff').Gpio;
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3000');
-
+var actions = ["playpause", "volup", "voldown", "previous", "next"];
 
 module.exports = GPIOButtons;
 
@@ -64,33 +64,19 @@ GPIOButtons.prototype.getConf = function () {
 	if(self.conf.length == 0){
 		self.logger.info("GPIO-Buttons: Empty config, loading defaults...");
 
-		self.conf = {
-		  "playpause":{
-		    "enabled": false,
-		    "pin": 2,
-		    "value": 0
-		  },
-		  "volup":{
-		    "enabled": false,
-		    "pin": 3,
-		    "value": 0
-		  },
-		  "voldown":{
-		    "enabled": false,
-		    "pin": 4,
-		    "value": 0
-		  },
-		  "previous":{
-		    "enabled": false,
-		    "pin": 5,
-		    "value": 0
-		  },
-		  "next":{
-		    "enabled": false,
-		    "pin": 6,
-		    "value": 0
-		  }
-		};
+		// Generate defaults..
+		self.conf = {};
+		var j = 2;
+		for(var i in actions){
+			var action = actions[i];
+			self.conf[action] = {
+				"enabled": false,
+				"pin": j,
+				"value": 0
+			}
+			j = j + 1;
+		}
+
 	}
 
 	return self.conf;
@@ -162,10 +148,6 @@ GPIOButtons.prototype.setConf = function (conf) {
 	self.clearTriggers();
 	self.applyConf(conf);
 
-	for (var i in conf){
-		var item = conf[i];
-		item.id = i;
-	}
 	fs.writeJsonSync(self.configFile,JSON.stringify(conf));
 };
 
@@ -212,35 +194,16 @@ GPIOButtons.prototype.saveTriggers=function(data)
 
 	var defer = libQ.defer();
 
-	var newconf = {
-	  "playpause":{
-	    "enabled": data['playpauseenabled'],
-	    "pin": data['playpausepin']['value'],
-	    "value": 0
-	  },
-	  "volup":{
-	    "enabled": data['volupenabled'],
-	    "pin": data['voluppin']['value'],
-	    "value": 0
-	  },
-	  "voldown":{
-	    "enabled": data['voldownenabled'],
-	    "pin": data['voldownpin']['value'],
-	    "value": 0
-	  },
-	  "previous":{
-	    "enabled": data['previousenabled'],
-	    "pin": data['previouspin']['value'],
-	    "value": 0
-	  },
-	  "next":{
-	    "enabled": data['nextenabled'],
-	    "pin": data['nextpin']['value'],
-	    "value": 0
-	  }
-	};
+	self.conf = {};
+	for(var i in actions){
+		var action = actions[i];
 
-	self.conf = newconf;
+		self.conf[action] = {
+			"enabled": data[action.concat('enabled')],
+	    "pin": data[action.concat('pin')]['value'],
+	    "value": 0
+		}
+	}
 
 	self.setConf(self.conf);
 
