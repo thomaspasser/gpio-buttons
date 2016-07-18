@@ -2,11 +2,10 @@
 
 var libQ = require('kew');
 var fs = require('fs-extra');
-var config = new (require('v-conf'))();
 var Gpio = require('onoff').Gpio;
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3000');
-
+var actions = ["playpause", "volup", "voldown", "previous", "next"];
 
 module.exports = GPIOButtons;
 
@@ -22,8 +21,6 @@ GPIOButtons.prototype.onVolumioStart = function () {
 	var self = this;
 
 	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
-	this.config = new(require('v-conf'))();
-	this.config.loadFile(self.configFile);
 
 	self.applyConf(self.getConf());
 	self.logger.info("GPIO-Buttons initialized");
@@ -55,6 +52,37 @@ GPIOButtons.prototype.onUninstall = function () {
 
 };
 
+GPIOButtons.prototype.getConf = function () {
+	var self = this;
+
+	self.conf = [];
+	try {
+		self.conf = JSON.parse(fs.readJsonSync(self.configFile));
+	} catch (e) {}
+
+
+	if(self.conf.length == 0){
+		self.logger.info("GPIO-Buttons: Empty config, loading defaults...");
+
+		// Generate defaults..
+		self.conf = {};
+		var j = 2;
+		for(var i in actions){
+			var action = actions[i];
+			self.conf[action] = {
+				"enabled": false,
+				"pin": j,
+				"value": 0
+			}
+			j = j + 1;
+		}
+
+	}
+
+	return self.conf;
+
+};
+
 GPIOButtons.prototype.getUIConfig = function () {
 	var defer = libQ.defer();
 	var self = this;
@@ -72,36 +100,17 @@ GPIOButtons.prototype.getUIConfig = function () {
         .then(function(uiconf)
         {
 
-  var conf = self.getConf();
+  	self.conf = self.getConf();
 
-	if(conf.length > 0){
-		uiconf.sections[0].content[0].value= conf[0]['playpauseenabled'];
 
-		uiconf.sections[0].content[1].value.value= conf[0]['playpausepin'];
-		uiconf.sections[0].content[1].value.label= conf[0]['playpausepin'].toString();
-
-		uiconf.sections[0].content[2].value= conf[0]['volupenabled'];
-
-		uiconf.sections[0].content[3].value.value= conf[0]['voluppin'];
-		uiconf.sections[0].content[3].value.label= conf[0]['voluppin'].toString();
-
-		uiconf.sections[0].content[4].value= conf[0]['voldownenabled'];
-
-		uiconf.sections[0].content[5].value.value= conf[0]['voldownpin'];
-		uiconf.sections[0].content[5].value.label= conf[0]['voldownpin'].toString();
-
-		uiconf.sections[0].content[6].value= conf[0]['previousenabled'];
-
-		uiconf.sections[0].content[7].value.value= conf[0]['previouspin'];
-		uiconf.sections[0].content[7].value.label= conf[0]['previouspin'].toString();
-
-		uiconf.sections[0].content[8].value= conf[0]['nextenabled'];
-
-		uiconf.sections[0].content[9].value.value= conf[0]['nextpin'];
-		uiconf.sections[0].content[9].value.label= conf[0]['nextpin'].toString();
-
-	}
-	// else keep defaults from UIConfig.json
+		var i = 0;
+		for(var action in self.conf){
+			var item = self.conf[action];
+			uiconf.sections[0].content[2*i].value = item.enabled;
+			uiconf.sections[0].content[2*i+1].value.value = item.pin;
+			uiconf.sections[0].content[2*i+1].value.label = item.pin.toString();
+			i = i + 1;
+		}
 
             defer.resolve(uiconf);
 					})
@@ -119,16 +128,7 @@ GPIOButtons.prototype.setUIConfig = function (data) {
 	var uiconf=fs.readJsonSync(__dirname+'/UIConfig.json');
 };
 
-GPIOButtons.prototype.getConf = function () {
-	var self = this;
 
-	var conf = [];
-	try {
-		var conf = JSON.parse(fs.readJsonSync(self.configFile));
-	} catch(e) {}
-	self.logger.info("GPIO-Buttons: Loading config file...");
-	return conf;
-};
 
 GPIOButtons.prototype.clearTriggers = function () {
 	var self = this;
@@ -148,10 +148,6 @@ GPIOButtons.prototype.setConf = function (conf) {
 	self.clearTriggers();
 	self.applyConf(conf);
 
-	for (var i in conf){
-		var item = conf[i];
-		item.id = i;
-	}
 	fs.writeJsonSync(self.configFile,JSON.stringify(conf));
 };
 
@@ -177,51 +173,19 @@ GPIOButtons.prototype.setAdditionalConf = function () {
 
 GPIOButtons.prototype.applyConf = function(conf) {
 	var self = this;
-
+	self.conf = conf;
 	self.logger.info('GPIO-Buttons: Applying config file...');
 
-	//self.logger.info('GPIO-Buttons: Found ' + count + ' items');
-
-	if(conf.length > 0){
-
-		var item = conf[0];
-		if(item.playpauseenabled === true){
-			self.logger.info('GPIO-Buttons: Play/pause on pin ' + item.playpausepin);
-			var j = new Gpio(item.playpausepin,'in','falling');
-			j.watch(self.playpause);
+	for(var action in conf){
+		var item = conf[action];
+		if(item.enabled === true){
+			self.logger.info('GPIO-Buttons: '+ self.getActionName(action) + ' on pin ' + item.pin);
+			var j = new Gpio(item.pin,'in','both');
+			j.watch(self.listener.bind(self,action));
 			self.triggers.push(j);
 		}
+	}
 
-		if(item.volupenabled === true){
-			self.logger.info('GPIO-Buttons: Vol+ on pin ' + item.voluppin);
-			var j = new Gpio(item.voluppin,'in','falling');
-			j.watch(self.volup);
-			self.triggers.push(j);
-		}
-
-		if(item.voldownenabled === true){
-			self.logger.info('GPIO-Buttons: Vol- on pin ' + item.voldownpin);
-			var j = new Gpio(item.voldownpin,'in','falling');
-			j.watch(self.voldown);
-			self.triggers.push(j);
-		}
-
-		if(item.previousenabled === true){
-			self.logger.info('GPIO-Buttons: Previous on pin ' + item.previouspin);
-			var j = new Gpio(item.previouspin,'in','falling');
-			j.watch(self.previous);
-			self.triggers.push(j);
-		}
-
-		if(item.nextenabled === true){
-			self.logger.info('GPIO-Buttons: Next on pin ' + item.nextpin);
-			var j = new Gpio(item.nextpin,'in','falling');
-			j.watch(self.next);
-			self.triggers.push(j);
-		}
-	} else {
-		self.logger.info('GPIO-Buttons: Empty configuration');
-		}
 }
 
 GPIOButtons.prototype.saveTriggers=function(data)
@@ -230,27 +194,18 @@ GPIOButtons.prototype.saveTriggers=function(data)
 
 	var defer = libQ.defer();
 
-	var conf = [];
+	self.conf = {};
+	for(var i in actions){
+		var action = actions[i];
 
-	conf[0] = {
-	  "playpauseenabled": data['playpauseenabled'],
-	  "playpausepin": data['playpausepin']['value'],
-	  "volupenabled": data['volupenabled'],
-	  "voluppin": data['voluppin']['value'],
-	  "voldownenabled": data['voldownenabled'],
-	  "voldownpin": data['voldownpin']['value'],
-	  "previousenabled": data['previousenabled'],
-	  "previouspin": data['previouspin']['value'],
-	  "nextenabled": data['nextenabled'],
-	  "nextpin": data['nextpin']['value']
+		self.conf[action] = {
+			"enabled": data[action.concat('enabled')],
+	    "pin": data[action.concat('pin')]['value'],
+	    "value": 0
+		}
 	}
 
-/*
-	conf[0] = {'enabled': data['enabled'],
-						'pin': data['pin']['value'],
-						'action': data['action']['value']}
-*/
-	self.setConf(conf);
+	self.setConf(self.conf);
 
 	self.commandRouter.pushToastMessage('success',"GPIO-Buttons", "Configuration saved");
 
@@ -258,7 +213,6 @@ GPIOButtons.prototype.saveTriggers=function(data)
 	return defer.promise;
 };
 
-/*
 GPIOButtons.prototype.getActionName = function(action) {
 	var actionName;
 
@@ -281,7 +235,19 @@ GPIOButtons.prototype.getActionName = function(action) {
 	}
 	return actionName;
 }
-*/
+
+GPIOButtons.prototype.listener = function(action,err,value){
+	var self = this;
+
+	// IF change AND high (or low?)
+	if(value !== self.conf[action].value && value === 1){
+		//do thing
+		self[action]();
+	}
+	// remember value
+	self.conf[action].value = value;
+
+}
 
 GPIOButtons.prototype.playpause = function() {
 	//self.logger.info('GPIO-Buttons: Play/pause button pressed');
@@ -289,7 +255,7 @@ GPIOButtons.prototype.playpause = function() {
 
   socket.once('pushState', function (state) {
     if(state.status=='play'){
-      socket.emit('stop');
+      socket.emit('pause');
     } else {
 			socket.emit('play');
     }
