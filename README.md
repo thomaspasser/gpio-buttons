@@ -14,7 +14,7 @@ Currently 5 actions can be attached to gpio pins: Play/pause, Vol+, Vol-, Next t
 
 The pin numbers entered should be GPIO pin numbers. The GPIO pins have an internal pull-up/pull-down resistor. The default value for each pin is shown below. As of now it is not possible to control the pull in the configuration. 
 
-The button should be wired between the GPIO pin and opposite voltage as the default pull. The plugin will detect any change on the GPIO pin.
+The button should be wired between the GPIO pin and __opposite__ voltage as the default pull. The plugin will detect any change on the GPIO pin.
 
 Example: If using GPIO pin 17, the button should be wired between the pin and 5V (high) because the default pull is low for GPIO pin 17.
 
