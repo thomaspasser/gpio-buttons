@@ -4,6 +4,8 @@ echo "Initializing config"
 mkdir /data/configuration/miscellanea/gpio-buttons
 touch /data/configuration/miscellanea/gpio-buttons/config.json
 
+chown -R volumio:volumio /data/configuration/miscellanea/gpio-buttons
+
 if [ ! -f "/lib/udev/rules.d/91-gpio.rules" ];
 	then
 		echo "GPIO permission rules doesn't exist, creating"
