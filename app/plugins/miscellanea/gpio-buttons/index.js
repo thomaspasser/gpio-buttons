@@ -17,7 +17,7 @@ function GPIOButtons(context) {
 	self.triggers = [];
 }
 
-GPIOButtons.prototype.onVolumioStart = function () {
+GPIOButtons.prototype.onStart = function () {
 	var self = this;
 
 	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
