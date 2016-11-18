@@ -10,7 +10,8 @@
   "license": "ISC",
   "volumio_info": {
     "prettyName": "GPIO Buttons",
-    "plugin_type": "miscellanea"
+    "plugin_type": "miscellanea",
+    "boot_priority": 10
   },
   "dependencies": {
     "fs-extra": "^0.28.0",
