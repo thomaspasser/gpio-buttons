@@ -5,7 +5,7 @@ var fs = require('fs-extra');
 var Gpio = require('onoff').Gpio;
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3000');
-var actions = ["playpause", "volup", "voldown", "previous", "next"];
+var actions = ["playpause", "volup", "voldown", "previous", "next", "shutdown"];
 
 module.exports = GPIOButtons;
 
@@ -17,7 +17,7 @@ function GPIOButtons(context) {
 	self.triggers = [];
 }
 
-GPIOButtons.prototype.onVolumioStart = function () {
+GPIOButtons.prototype.onStart = function () {
 	var self = this;
 
 	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
@@ -200,8 +200,8 @@ GPIOButtons.prototype.saveTriggers=function(data)
 
 		self.conf[action] = {
 			"enabled": data[action.concat('enabled')],
-	    "pin": data[action.concat('pin')]['value'],
-	    "value": 0
+	    	"pin": data[action.concat('pin')]['value'],
+	    	"value": 0
 		}
 	}
 
@@ -232,6 +232,9 @@ GPIOButtons.prototype.getActionName = function(action) {
 		case 'voldown':
 			actionName = "Vol-";
 			break;
+		case 'shutdown':
+			actionName = "Shutdown";
+			break;
 	}
 	return actionName;
 }
@@ -250,7 +253,7 @@ GPIOButtons.prototype.listener = function(action,err,value){
 }
 
 GPIOButtons.prototype.playpause = function() {
-	//self.logger.info('GPIO-Buttons: Play/pause button pressed');
+	//this.logger.info('GPIO-Buttons: Play/pause button pressed');
   socket.emit('getState','');
 
   socket.once('pushState', function (state) {
@@ -264,24 +267,30 @@ GPIOButtons.prototype.playpause = function() {
 
 //Next on playlist
 GPIOButtons.prototype.next = function() {
-  //self.logger.info('GPIO-Buttons: Next-button pressed');
+  //this.logger.info('GPIO-Buttons: Next-button pressed');
   socket.emit('next')
 }
 
 //Previous on playlist
 GPIOButtons.prototype.previous = function() {
-  //self.logger.info('GPIO-Buttons: Previous-button pressed');
+  //this.logger.info('GPIO-Buttons: Previous-button pressed');
   socket.emit('prev')
 }
 
 //Volume up
 GPIOButtons.prototype.volup = function() {
-  //self.logger.info('GPIO-Buttons: Vol+ button pressed');
+  //this.logger.info('GPIO-Buttons: Vol+ button pressed');
   socket.emit('volume','+');
 }
 
 //Volume down
 GPIOButtons.prototype.voldown = function() {
-  //self.logger.info('GPIO-Buttons: Vol- button pressed\n');
+  //this.logger.info('GPIO-Buttons: Vol- button pressed\n');
   socket.emit('volume','-');
+}
+
+//Shutdown
+GPIOButtons.prototype.shutdown = function() {
+  //this.logger.info('GPIO-Buttons: Shutdown button pressed\n');
+  this.commandRouter.shutdown();
 }
