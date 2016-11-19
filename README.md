@@ -2,7 +2,7 @@
 
 Work in progress for a GPIO button plugin for volumio2 on the raspberry pi. Uses node js library 'onoff'.
 
-Currently 5 actions can be attached to gpio pins: Play/pause, Vol+, Vol-, Next track and Previous track.
+Currently 6 actions can be attached to gpio pins: Play/pause, Vol+, Vol-, Next track, Previous track and shutdown.
 
 ![GPIO Buttons interface](http://tomatpasser.dk/gpio-buttons2.png)
 
