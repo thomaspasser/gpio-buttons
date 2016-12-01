@@ -17,15 +17,34 @@ function GPIOButtons(context) {
 	self.triggers = [];
 }
 
+
+GPIOButtons.prototype.onVolumioStart = function () {
+	var self = this;
+
+	self.logger.info("GPIO-Buttons initialized");
+
+}
+
+
+GPIOButtons.prototype.getConfigurationFiles = function()
+{
+	return ['config.json'];
+}
+
+
+
+
 GPIOButtons.prototype.onStart = function () {
 	var self = this;
 
+	var defer=libQ.defer();
+	
 	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
 
 	self.applyConf(self.getConf());
-	self.logger.info("GPIO-Buttons initialized");
+	self.logger.info("GPIO-Buttons started");
 
-	return libQ.resolve();
+	return defer.promise;
 
 };
 
