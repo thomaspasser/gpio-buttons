@@ -5,7 +5,7 @@ var fs = require('fs-extra');
 var Gpio = require('onoff').Gpio;
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3000');
-var actions = ["playpause", "volup", "voldown", "previous", "next", "shutdown"];
+var actions = ["playpause", "volup", "voldown", "previous", "next", "shuffle", "shutdown"];
 
 module.exports = GPIOButtons;
 
@@ -38,7 +38,7 @@ GPIOButtons.prototype.onStart = function () {
 	var self = this;
 
 	var defer=libQ.defer();
-	
+
 	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
 
 	self.applyConf(self.getConf());
@@ -251,6 +251,9 @@ GPIOButtons.prototype.getActionName = function(action) {
 		case 'voldown':
 			actionName = "Vol-";
 			break;
+		case 'shuffle':
+			actionName = "Shuffle";
+			break;
 		case 'shutdown':
 			actionName = "Shutdown";
 			break;
@@ -308,8 +311,23 @@ GPIOButtons.prototype.voldown = function() {
   socket.emit('volume','-');
 }
 
+//Shuffle
+GPIOButtons.prototype.shuffle = function() {
+	socket.emit('getState','');
+
+	socket.once('pushState', function (state) {
+		this.logger.info('GPIO-Buttons: Random state:' + state.random +'\n');
+    if(state.random=='true'){
+			socket.emit('setRandom','false');
+    } else {
+			socket.emit('setRandom','true');
+    }
+  });
+}
+
 //Shutdown
 GPIOButtons.prototype.shutdown = function() {
   //this.logger.info('GPIO-Buttons: Shutdown button pressed\n');
-  this.commandRouter.shutdown();
+  //this.commandRouter.shutdown();
+	socket.emit('shutdown')
 }

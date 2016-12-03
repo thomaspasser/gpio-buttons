@@ -24,6 +24,11 @@
     "pin": {"value":"6","type":"number"},
     "value": {"value": "0", "type": "number"}
   },
+  "shuffle":{
+    "enabled": {"value": false, "type": "boolean"},
+    "pin": {"value":"7","type":"number"},
+    "value": {"value": "0", "type": "number"}
+  },
   "shutdown":{
     "enabled": {"value": false, "type": "boolean"},
     "pin": {"value":"3","type":"number"},
