@@ -23,7 +23,7 @@
           "nextenabled",
           "nextpin",
           "shuffleenabled",
-          "shufflepin"
+          "shufflepin",
           "shutdownenabled",
           "shutdownpin"
         ]

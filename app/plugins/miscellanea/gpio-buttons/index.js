@@ -316,7 +316,7 @@ GPIOButtons.prototype.shuffle = function() {
 	socket.emit('getState','');
 
 	socket.once('pushState', function (state) {
-		this.logger.info('GPIO-Buttons: Random state:' + state.random +'\n');
+		//this.logger.info('GPIO-Buttons: Random state:' + state.random +'\n');
     if(state.random=='true'){
 			socket.emit('setRandom','false');
     } else {
