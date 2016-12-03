@@ -14,12 +14,17 @@ function GPIOButtons(context) {
 	self.context=context;
 	self.commandRouter = self.context.coreCommand;
 	self.logger = self.context.logger;
+
 	self.triggers = [];
 }
 
 
 GPIOButtons.prototype.onVolumioStart = function () {
 	var self = this;
+	self.logger.info("GPIO-Buttons initializing");
+	var configFile=this.commandRouter.pluginManager.getConfigurationFile(this.context,'config.json');
+	this.config = new (require('v-conf'))();
+	this.config.loadFile(configFile);
 
 	self.logger.info("GPIO-Buttons initialized");
 
@@ -38,10 +43,8 @@ GPIOButtons.prototype.onStart = function () {
 	var self = this;
 
 	var defer=libQ.defer();
-	
-	self.configFile=self.commandRouter.pluginManager.getConfigurationFile(self.context,'config.json');
 
-	self.applyConf(self.getConf());
+	self.applyConf();
 	self.logger.info("GPIO-Buttons started");
 
 	return defer.promise;
@@ -74,32 +77,6 @@ GPIOButtons.prototype.onUninstall = function () {
 GPIOButtons.prototype.getConf = function () {
 	var self = this;
 
-	self.conf = [];
-	try {
-		self.conf = JSON.parse(fs.readJsonSync(self.configFile));
-	} catch (e) {}
-
-
-	if(self.conf.length == 0){
-		self.logger.info("GPIO-Buttons: Empty config, loading defaults...");
-
-		// Generate defaults..
-		self.conf = {};
-		var j = 2;
-		for(var i in actions){
-			var action = actions[i];
-			self.conf[action] = {
-				"enabled": false,
-				"pin": j,
-				"value": 0
-			}
-			j = j + 1;
-		}
-
-	}
-
-	return self.conf;
-
 };
 
 GPIOButtons.prototype.getUIConfig = function () {
@@ -119,15 +96,16 @@ GPIOButtons.prototype.getUIConfig = function () {
         .then(function(uiconf)
         {
 
-  	self.conf = self.getConf();
-
-
 		var i = 0;
-		for(var action in self.conf){
-			var item = self.conf[action];
-			uiconf.sections[0].content[2*i].value = item.enabled;
-			uiconf.sections[0].content[2*i+1].value.value = item.pin;
-			uiconf.sections[0].content[2*i+1].value.label = item.pin.toString();
+		for(var j in actions){
+			var action = actions[j]
+
+			// Strings for config
+			var c1 = action.concat('.enabled');
+			var c2 = action.concat('.pin');
+			uiconf.sections[0].content[2*i].value = self.config.get(c1);
+			uiconf.sections[0].content[2*i+1].value.value = self.config.get(c2);
+			uiconf.sections[0].content[2*i+1].value.label = self.config.get(c2).toString();
 			i = i + 1;
 		}
 
@@ -161,13 +139,12 @@ GPIOButtons.prototype.clearTriggers = function () {
 	self.triggers = [];
 };
 
-GPIOButtons.prototype.setConf = function (conf) {
+GPIOButtons.prototype.setConf = function () {
 	var self = this;
 
 	self.clearTriggers();
-	self.applyConf(conf);
+	self.applyConf();
 
-	fs.writeJsonSync(self.configFile,JSON.stringify(conf));
 };
 
 GPIOButtons.prototype.getSystemConf = function (pluginName, varName) {
@@ -190,16 +167,24 @@ GPIOButtons.prototype.setAdditionalConf = function () {
 
 };
 
-GPIOButtons.prototype.applyConf = function(conf) {
+GPIOButtons.prototype.applyConf = function() {
 	var self = this;
-	self.conf = conf;
+
 	self.logger.info('GPIO-Buttons: Applying config file...');
 
-	for(var action in conf){
-		var item = conf[action];
-		if(item.enabled === true){
-			self.logger.info('GPIO-Buttons: '+ self.getActionName(action) + ' on pin ' + item.pin);
-			var j = new Gpio(item.pin,'in','both');
+
+	for(var i in actions){
+		var action = actions[i];
+		// Strings for config
+		var c1 = action.concat('.enabled');
+		var c2 = action.concat('.pin');
+
+		var enabled = self.config.get(c1);
+		var pin = self.config.get(c2);
+
+		if(enabled === true){
+			self.logger.info('GPIO-Buttons: '+ self.getActionName(action) + ' on pin ' + pin);
+			var j = new Gpio(pin,'in','both');
 			j.watch(self.listener.bind(self,action));
 			self.triggers.push(j);
 		}
@@ -213,24 +198,31 @@ GPIOButtons.prototype.saveTriggers=function(data)
 
 	var defer = libQ.defer();
 
-	self.conf = {};
 	for(var i in actions){
 		var action = actions[i];
 
-		self.conf[action] = {
-			"enabled": data[action.concat('enabled')],
-	    	"pin": data[action.concat('pin')]['value'],
-	    	"value": 0
-		}
+		// Strings for data fields
+		var s1 = action.concat('enabled');
+		var s2 = action.concat('pin');
+
+		// Strings for config
+		var c1 = action.concat('.enabled');
+		var c2 = action.concat('.pin');
+		var c3 = action.concat('.value');
+
+		self.config.set(c1, data[s1]);
+		self.config.set(c2, data[s2]['value']);
+		self.config.set(c3, 0);
+
 	}
 
-	self.setConf(self.conf);
+	self.setConf();
 
 	self.commandRouter.pushToastMessage('success',"GPIO-Buttons", "Configuration saved");
 
 	defer.resolve({});
 	return defer.promise;
-};
+}
 
 GPIOButtons.prototype.getActionName = function(action) {
 	var actionName;
@@ -261,13 +253,16 @@ GPIOButtons.prototype.getActionName = function(action) {
 GPIOButtons.prototype.listener = function(action,err,value){
 	var self = this;
 
+	var c3 = action.concat('.value');
+	var lastvalue = self.config.get(c3);
+
 	// IF change AND high (or low?)
-	if(value !== self.conf[action].value && value === 1){
+	if(value !== lastvalue && value === 1){
 		//do thing
 		self[action]();
 	}
 	// remember value
-	self.conf[action].value = value;
+	self.config.set(c3,value);
 
 }
 

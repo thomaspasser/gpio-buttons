@@ -2,7 +2,7 @@
 
 echo "Initializing config"
 mkdir /data/configuration/miscellanea/gpio-buttons
-touch /data/configuration/miscellanea/gpio-buttons/config.json
+#touch /data/configuration/miscellanea/gpio-buttons/config.json
 
 chown -R volumio:volumio /data/configuration/miscellanea/gpio-buttons
 
