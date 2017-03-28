@@ -267,14 +267,15 @@ GPIOButtons.prototype.listener = function(action,err,value){
 }
 
 GPIOButtons.prototype.playpause = function() {
-	//this.logger.info('GPIO-Buttons: Play/pause button pressed');
+  //this.logger.info('GPIO-Buttons: Play/pause button pressed');
   socket.emit('getState','');
-
   socket.once('pushState', function (state) {
-    if(state.status=='play'){
+    if(state.status=='play' && state.service=='webradio'){
+      socket.emit('stop');
+    } else if(state.status=='play'){
       socket.emit('pause');
     } else {
-			socket.emit('play');
+      socket.emit('play');
     }
   });
 }
