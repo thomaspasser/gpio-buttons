@@ -662,8 +662,8 @@
           "id": "shutdownpin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 3,
-                    "label": "3"
+          "value": {"value": 7,
+                    "label": "7"
           },
 
           "options": [
