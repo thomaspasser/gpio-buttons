@@ -47,6 +47,8 @@ GPIOButtons.prototype.onStart = function () {
 	self.applyConf();
 	self.logger.info("GPIO-Buttons started");
 
+	defer.resolve();
+	
 	return defer.promise;
 
 };
@@ -54,8 +56,17 @@ GPIOButtons.prototype.onStart = function () {
 GPIOButtons.prototype.onStop = function () {
 	var self = this;
 
-	self.clearTriggers();
-	self.logger.info("GPIO-Buttons stopped")
+	self.clearTriggers()
+		.then(function(e)
+		{
+			self.logger.info("GPIO-Buttons stopped")
+			defer.resolve();
+		})
+		.fail(function(e)
+		{
+			defer.reject(new Error());
+		});
+
 	return libQ.resolve();
 };
 
@@ -129,6 +140,8 @@ GPIOButtons.prototype.setUIConfig = function (data) {
 
 GPIOButtons.prototype.clearTriggers = function () {
 	var self = this;
+	var defer=libQ.defer();
+	
 	for (var i in self.triggers) {
 		var trigger = self.triggers[i];
 		self.logger.info("GPIO-Buttons: Destroying trigger " + i);
@@ -137,6 +150,8 @@ GPIOButtons.prototype.clearTriggers = function () {
 		trigger.unexport();
 	}
 	self.triggers = [];
+	
+	return defer.promise;
 };
 
 GPIOButtons.prototype.setConf = function () {
