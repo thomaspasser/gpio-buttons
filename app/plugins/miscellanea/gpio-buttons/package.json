@@ -10,6 +10,7 @@
   "license": "ISC",
   "volumio_info": {
     "prettyName": "GPIO Buttons",
+    "icon": "fa-microchip",
     "plugin_type": "miscellanea",
     "boot_priority": 10
   },
