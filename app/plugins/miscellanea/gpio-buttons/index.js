@@ -56,16 +56,8 @@ GPIOButtons.prototype.onStart = function () {
 GPIOButtons.prototype.onStop = function () {
 	var self = this;
 
-	self.clearTriggers()
-		.then(function(e)
-		{
-			self.logger.info("GPIO-Buttons stopped")
-			defer.resolve();
-		})
-		.fail(function(e)
-		{
-			defer.reject(new Error());
-		});
+	self.clearTriggers();
+	self.logger.info("GPIO-Buttons stopped");
 
 	return libQ.resolve();
 };
