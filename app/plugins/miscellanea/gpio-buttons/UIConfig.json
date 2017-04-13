@@ -37,8 +37,8 @@
           "id": "playpausepin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 2,
-                    "label": "2"
+          "value": {"value": 0,
+                    "label": "0"
           },
 
           "options": [
@@ -162,8 +162,8 @@
           "id": "voluppin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 3,
-                    "label": "3"
+          "value": {"value": 0,
+                    "label": "0"
           },
 
           "options": [
@@ -287,8 +287,8 @@
           "id": "voldownpin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 4,
-                    "label": "4"
+          "value": {"value": 0,
+                    "label": "0"
           },
 
           "options": [
@@ -412,8 +412,8 @@
           "id": "previouspin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 5,
-                    "label": "5"
+          "value": {"value": 0,
+                    "label": "0"
           },
 
           "options": [
@@ -537,8 +537,8 @@
           "id": "nextpin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 6,
-                    "label": "6"
+          "value": {"value": 0,
+                    "label": "0"
           },
 
           "options": [
@@ -662,8 +662,8 @@
           "id": "shutdownpin",
           "element": "select",
           "label": "GPIO Pin",
-          "value": {"value": 7,
-                    "label": "7"
+          "value": {"value": 0,
+                    "label": "0"
           },
 
           "options": [
