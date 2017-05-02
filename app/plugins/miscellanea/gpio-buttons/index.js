@@ -26,6 +26,8 @@ GPIOButtons.prototype.onVolumioStart = function () {
 	this.config.loadFile(configFile);
 
 	self.logger.info("GPIO-Buttons initialized");
+	
+	return libQ.resolve();	
 };
 
 
@@ -37,21 +39,29 @@ GPIOButtons.prototype.getConfigurationFiles = function()
 
 GPIOButtons.prototype.onStart = function () {
 	var self = this;
+	var defer=libQ.defer();
 
-	self.createTriggers();
-	self.logger.info("GPIO-Buttons started");
+	self.createTriggers()
+		.then (function (result) {
+			self.logger.info("GPIO-Buttons started");
+			defer.resolve();
+		});
 	
-    return libQ.resolve();
+    return defer.promise;
 };
 
 
 GPIOButtons.prototype.onStop = function () {
 	var self = this;
+	var defer=libQ.defer();
 
-	self.clearTriggers();
-	self.logger.info("GPIO-Buttons stopped");
-
-    return libQ.resolve();
+	self.clearTriggers()
+		.then (function (result) {
+			self.logger.info("GPIO-Buttons stopped");
+			defer.resolve();
+		});
+	
+    return defer.promise;
 };
 
 
@@ -177,6 +187,8 @@ GPIOButtons.prototype.createTriggers = function() {
 			self.triggers.push(j);
 		}
 	});
+		
+	return libQ.resolve();
 };
 
 
@@ -189,7 +201,10 @@ GPIOButtons.prototype.clearTriggers = function () {
 		trigger.unwatchAll();
 		trigger.unexport();		
 	});
-	self.triggers = [];	
+	
+	self.triggers = [];
+
+	return libQ.resolve();	
 };
 
 
