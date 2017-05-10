@@ -5,7 +5,7 @@ var fs = require('fs-extra');
 var Gpio = require('onoff').Gpio;
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3000');
-var actions = ["Play_Pause", "Volume_up", "Volume_down", "Previous", "Next", "Shutdown"];
+var actions = ["playPause", "volumeUp", "volumeDown", "previous", "next", "shutdown"];
 
 module.exports = GPIOButtons;
 
@@ -228,7 +228,7 @@ GPIOButtons.prototype.listener = function(action,err,value){
 
 
 //Play / Pause
-GPIOButtons.prototype.Play_Pause = function() {
+GPIOButtons.prototype.playPause = function() {
   //this.logger.info('GPIO-Buttons: Play/pause button pressed');
   socket.emit('getState','');
   socket.once('pushState', function (state) {
@@ -242,32 +242,32 @@ GPIOButtons.prototype.Play_Pause = function() {
   });
 };
 
-//Next on playlist
-GPIOButtons.prototype.Next = function() {
-  //this.logger.info('GPIO-Buttons: Next-button pressed');
+//next on playlist
+GPIOButtons.prototype.next = function() {
+  //this.logger.info('GPIO-Buttons: next-button pressed');
   socket.emit('next')
 };
 
-//Previous on playlist
-GPIOButtons.prototype.Previous = function() {
-  //this.logger.info('GPIO-Buttons: Previous-button pressed');
+//previous on playlist
+GPIOButtons.prototype.previous = function() {
+  //this.logger.info('GPIO-Buttons: previous-button pressed');
   socket.emit('prev')
 };
 
 //Volume up
-GPIOButtons.prototype.Volume_up = function() {
+GPIOButtons.prototype.volumeUp = function() {
   //this.logger.info('GPIO-Buttons: Vol+ button pressed');
   socket.emit('volume','+');
 };
 
 //Volume down
-GPIOButtons.prototype.Volume_down = function() {
+GPIOButtons.prototype.volumeDown = function() {
   //this.logger.info('GPIO-Buttons: Vol- button pressed\n');
   socket.emit('volume','-');
 };
 
-//Shutdown
-GPIOButtons.prototype.Shutdown = function() {
-  // this.logger.info('GPIO-Buttons: Shutdown button pressed\n');
+//shutdown
+GPIOButtons.prototype.shutdown = function() {
+  // this.logger.info('GPIO-Buttons: shutdown button pressed\n');
   this.commandRouter.shutdown();
 };
