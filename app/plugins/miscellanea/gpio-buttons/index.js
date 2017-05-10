@@ -148,8 +148,8 @@ GPIOButtons.prototype.saveConfig = function(data)
 
 	actions.forEach(function(action, index, array) {
  		// Strings for data fields
-		var s1 = action.concat('_enabled');
-		var s2 = action.concat('_pin');
+		var s1 = action.concat('Enabled');
+		var s2 = action.concat('Pin');
 
 		// Strings for config
 		var c1 = action.concat('.enabled');
