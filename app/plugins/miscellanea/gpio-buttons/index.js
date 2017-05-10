@@ -161,8 +161,8 @@ GPIOButtons.prototype.saveConfig = function(data)
 		self.config.set(c3, 0);
 	});
 
-	self.clearTriggers();
-	self.createTriggers();
+	self.clearTriggers()
+		.then(self.createTriggers());
 
 	self.commandRouter.pushToastMessage('success',"GPIO-Buttons", "Configuration saved");
 };
