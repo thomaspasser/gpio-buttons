@@ -12,29 +12,29 @@
       "saveButton": {
         "label": "Save",
         "data": [
-          "playPause_enabled",
-          "playPause_pin",
-          "volumeUp_enabled",
-          "volumeUp_pin",
-          "volumeDown_enabled",
-          "volumeDown_pin",
-          "previous_enabled",
-          "previous_pin",
-          "next_enabled",
-          "next_pin",
-          "shutdown_enabled",
-          "shutdown_pin"
+          "playPauseEnabled",
+          "playPausePin",
+          "volumeUpEnabled",
+          "volumeUpPin",
+          "volumeDownEnabled",
+          "volumeDownPin",
+          "previousEnabled",
+          "previousPin",
+          "nextEnabled",
+          "nextPin",
+          "shutdownEnabled",
+          "shutdownPin"
         ]
       },
       "content": [
         {
-          "id": "playPause_enabled",
+          "id": "playPauseEnabled",
           "element": "switch",
           "label": "Enable Play/pause",
           "value": false
         },
         {
-          "id": "playPause_pin",
+          "id": "playPausePin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -148,18 +148,18 @@
             }
           ],
           "visibleIf": {
-            "field": "playPause_enabled",
+            "field": "playPauseEnabled",
             "value": true
           }
         },
         {
-          "id": "volumeUp_enabled",
+          "id": "volumeUpEnabled",
           "element": "switch",
           "label": "Enable Vol+",
           "value": false
         },
         {
-          "id": "volumeUp_pin",
+          "id": "volumeUpPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -273,18 +273,18 @@
             }
           ],
           "visibleIf": {
-            "field": "volumeUp_enabled",
+            "field": "volumeUpEnabled",
             "value": true
           }
         },
         {
-          "id": "volumeDown_enabled",
+          "id": "volumeDownEnabled",
           "element": "switch",
           "label": "Enable Vol-",
           "value": false
         },
         {
-          "id": "volumeDown_pin",
+          "id": "volumeDownPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -398,18 +398,18 @@
             }
           ],
           "visibleIf": {
-            "field": "volumeDown_enabled",
+            "field": "volumeDownEnabled",
             "value": true
           }
         },
         {
-          "id": "previous_enabled",
+          "id": "previousEnabled",
           "element": "switch",
           "label": "Enable Previous",
           "value": false
         },
         {
-          "id": "previous_pin",
+          "id": "previousPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -523,18 +523,18 @@
             }
           ],
           "visibleIf": {
-            "field": "previous_enabled",
+            "field": "previousEnabled",
             "value": true
           }
         },
         {
-          "id": "next_enabled",
+          "id": "nextEnabled",
           "element": "switch",
           "label": "Enable Next",
           "value": false
         },
         {
-          "id": "next_pin",
+          "id": "nextPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -648,18 +648,18 @@
             }
           ],
           "visibleIf": {
-            "field": "next_enabled",
+            "field": "nextEnabled",
             "value": true
           }
         },
         {
-          "id": "shutdown_enabled",
+          "id": "shutdownEnabled",
           "element": "switch",
           "label": "Enable Shutdown",
           "value": false
         },
         {
-          "id": "shutdown_pin",
+          "id": "shutdownPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -773,7 +773,7 @@
             }
           ],
           "visibleIf": {
-            "field": "shutdown_enabled",
+            "field": "shutdownEnabled",
             "value": true
           }
         }
