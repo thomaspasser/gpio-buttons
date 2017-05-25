@@ -11,7 +11,7 @@
   "volumio_info": {
     "prettyName": "GPIO Buttons",
     "icon": "fa-microchip",
-    "plugin_type": "miscellanea",
+    "plugin_type": "system_controller",
     "boot_priority": 10
   },
   "dependencies": {
