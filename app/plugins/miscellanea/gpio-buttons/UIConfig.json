@@ -8,33 +8,33 @@
       "element": "section",
       "label": "Setup your GPIO button actions",
       "icon": "fa-plug",
-      "onSave": {"type":"controller", "endpoint":"miscellanea/gpio-buttons", "method":"saveTriggers"},
+      "onSave": {"type":"controller", "endpoint":"miscellanea/gpio-buttons", "method":"saveConfig"},
       "saveButton": {
         "label": "Save",
         "data": [
-          "playpauseenabled",
-          "playpausepin",
-          "volupenabled",
-          "voluppin",
-          "voldownenabled",
-          "voldownpin",
-          "previousenabled",
-          "previouspin",
-          "nextenabled",
-          "nextpin",
-          "shutdownenabled",
-          "shutdownpin"
+          "playPauseEnabled",
+          "playPausePin",
+          "volumeUpEnabled",
+          "volumeUpPin",
+          "volumeDownEnabled",
+          "volumeDownPin",
+          "previousEnabled",
+          "previousPin",
+          "nextEnabled",
+          "nextPin",
+          "shutdownEnabled",
+          "shutdownPin"
         ]
       },
       "content": [
         {
-          "id": "playpauseenabled",
+          "id": "playPauseEnabled",
           "element": "switch",
           "label": "Enable Play/pause",
           "value": false
         },
         {
-          "id": "playpausepin",
+          "id": "playPausePin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -148,18 +148,18 @@
             }
           ],
           "visibleIf": {
-            "field": "playpauseenabled",
+            "field": "playPauseEnabled",
             "value": true
           }
         },
         {
-          "id": "volupenabled",
+          "id": "volumeUpEnabled",
           "element": "switch",
           "label": "Enable Vol+",
           "value": false
         },
         {
-          "id": "voluppin",
+          "id": "volumeUpPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -273,18 +273,18 @@
             }
           ],
           "visibleIf": {
-            "field": "volupenabled",
+            "field": "volumeUpEnabled",
             "value": true
           }
         },
         {
-          "id": "voldownenabled",
+          "id": "volumeDownEnabled",
           "element": "switch",
           "label": "Enable Vol-",
           "value": false
         },
         {
-          "id": "voldownpin",
+          "id": "volumeDownPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -398,18 +398,18 @@
             }
           ],
           "visibleIf": {
-            "field": "voldownenabled",
+            "field": "volumeDownEnabled",
             "value": true
           }
         },
         {
-          "id": "previousenabled",
+          "id": "previousEnabled",
           "element": "switch",
           "label": "Enable Previous",
           "value": false
         },
         {
-          "id": "previouspin",
+          "id": "previousPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -523,18 +523,18 @@
             }
           ],
           "visibleIf": {
-            "field": "previousenabled",
+            "field": "previousEnabled",
             "value": true
           }
         },
         {
-          "id": "nextenabled",
+          "id": "nextEnabled",
           "element": "switch",
           "label": "Enable Next",
           "value": false
         },
         {
-          "id": "nextpin",
+          "id": "nextPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -648,18 +648,18 @@
             }
           ],
           "visibleIf": {
-            "field": "nextenabled",
+            "field": "nextEnabled",
             "value": true
           }
         },
         {
-          "id": "shutdownenabled",
+          "id": "shutdownEnabled",
           "element": "switch",
           "label": "Enable Shutdown",
           "value": false
         },
         {
-          "id": "shutdownpin",
+          "id": "shutdownPin",
           "element": "select",
           "label": "GPIO Pin",
           "value": {"value": 0,
@@ -773,7 +773,7 @@
             }
           ],
           "visibleIf": {
-            "field": "shutdownenabled",
+            "field": "shutdownEnabled",
             "value": true
           }
         }

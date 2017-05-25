@@ -1,15 +1,15 @@
 {
-  "playpause":{
+  "playPause":{
     "enabled": {"value": false, "type": "boolean"},
     "pin": {"value": 17,"type":"number"},
     "value": {"value": 0, "type": "number"}
   },
-  "volup":{
+  "volumeUp":{
     "enabled": {"value": false, "type": "boolean"},
     "pin": {"value": 18,"type":"number"},
     "value": {"value": 0, "type": "number"}
   },
-  "voldown":{
+  "volumeDown":{
     "enabled": {"value": false, "type": "boolean"},
     "pin": {"value": 22,"type":"number"},
     "value": {"value": 0, "type": "number"}
